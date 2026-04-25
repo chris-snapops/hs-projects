@@ -1,0 +1,30 @@
+{
+  "uid": "rovr_cb_app",
+  "type": "app",
+  "config": {
+    "description": "An example to demonstrate how to build a static private app with developer projects.",
+    "name": "rovr-cb-App",
+    "distribution": "private",
+    "auth": {
+      "type": "static",
+      "requiredScopes": [
+        "oauth",
+        "crm.objects.contacts.read",
+        "crm.objects.contacts.write"
+      ],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": [
+        "https://api.hubapi.com"
+      ],
+      "iframe": [],
+      "img": []
+    },
+    "support": {
+      "supportEmail": "support@profitpad.com",
+      "supportUrl": "https://profitpad.com"
+    }
+  }
+}

@@ -1,0 +1,2 @@
+This is a template app card.  It's just an example of some things you can do with an app card.  This app card can run 100% for free on a free HubSpot account.
+The button below sends a POST request to {url}, and sends the contact and associated deal data.

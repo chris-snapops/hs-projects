@@ -1,0 +1,12 @@
+{
+  "uid": "profitpad_template_card",
+  "type": "card",
+  "config": {
+    "name": "Template App Card",
+    "location": "crm.record.tab",
+    "entrypoint": "/app/cards/card.tsx",
+    "objectTypes": [
+      "contacts"
+    ]
+  }
+}

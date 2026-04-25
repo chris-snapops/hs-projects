@@ -1,0 +1,37 @@
+{
+  "uid": "profitpad_template_app",
+  "type": "app",
+  "config": {
+    "description": "An example to demonstrate how to build a static private app with developer projects.",
+    "name": "ProfitPad Template App",
+    "distribution": "private",
+    "auth": {
+      "type": "static",
+      "requiredScopes": [
+        "oauth",
+        "crm.objects.contacts.read",
+        "crm.objects.contacts.write",
+        "crm.objects.companies.read",
+        "crm.objects.companies.write",
+        "crm.objects.deals.read",
+        "crm.objects.deals.write",
+        "crm.objects.custom.read",
+        "crm.objects.custom.write"
+      ],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": [
+        "https://api.hubapi.com",
+        "https://34.130.96.44.nip.io"
+      ],
+      "iframe": [],
+      "img": []
+    },
+    "support": {
+      "supportEmail": "support@profitpad.com",
+      "supportUrl": "https://profitpad.com"
+    }
+  }
+}
