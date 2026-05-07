@@ -10,10 +10,6 @@
     "clipboardWrite"
   ],
 
-  "host_permissions": [
-    "https://*.hubspot.com/*"
-  ],
-
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
