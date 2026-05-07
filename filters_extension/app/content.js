@@ -20,46 +20,41 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   // Primary: graphql intercept (captures live filter state for all view types)
   if (latestFilterData) {
-    const filters = sanitizeFilters(
-      flattenFilterGroups(latestFilterData.filterGroups),
-      latestFilterData.objectTypeId
-    );
+    const { filterGroups: rawGroups, objectTypeId } = latestFilterData;
+    const groups = rawGroups
+      .map(group => sanitizeFilters(flattenGroup(group), objectTypeId))
+      .filter(g => g.length > 0);
+
     sendResponse({
       source: 'graphql',
-      filters,
-      fullUrl: buildShareableUrl(url, latestFilterData.objectTypeId, filters),
+      groups,
+      baseUrl: buildBaseUrl(url, objectTypeId),
     });
     return true;
   }
 
-  // Fallback: filters in the URL (e.g. /views/all/list?filters=...)
+  // Fallback: filters encoded in the URL
   const raw = url.searchParams.get('filters');
   if (raw) {
     try {
       const filters = JSON.parse(raw);
       if (Array.isArray(filters) && filters.length > 0) {
-        sendResponse({ source: 'url', filters, fullUrl: buildShareableUrl(url, null, filters) });
+        sendResponse({
+          source: 'url',
+          groups: [filters],
+          baseUrl: buildBaseUrl(url, null),
+        });
         return true;
       }
     } catch (_) {}
   }
 
-  sendResponse({ source: 'none', filters: [], fullUrl: null });
+  sendResponse({ source: 'none', groups: [], baseUrl: null });
   return true;
 });
 
-function flattenFilterGroups(filterGroups) {
-  const filters = [];
-  for (const group of filterGroups) {
-    for (const f of (group.filters || [])) {
-      // Pass all fields through so operators like ROLLING_DATE_RANGE (which use
-      // timeUnit/timeUnitCount/inclusive/rollForward instead of value/values) work correctly.
-      // Strip __typename which GraphQL clients add for internal type resolution.
-      const { __typename, ...entry } = f;
-      filters.push(entry);
-    }
-  }
-  return filters;
+function flattenGroup(group) {
+  return (group.filters || []).map(({ __typename, ...entry }) => entry);
 }
 
 function sanitizeFilters(filters, objectTypeId) {
@@ -69,9 +64,9 @@ function sanitizeFilters(filters, objectTypeId) {
   return filters.filter(f => !(f.property === 'pipeline' && f.operator === 'EQ'));
 }
 
-function buildShareableUrl(url, objectTypeId, filters) {
+function buildBaseUrl(url, objectTypeId) {
   const match = url.pathname.match(/\/contacts\/(\d+)\/objects\/([^/]+)\//);
   const hubId = match ? match[1] : '';
   const type = objectTypeId || (match ? match[2] : '0-1');
-  return `${url.origin}/contacts/${hubId}/objects/${type}/views/all/list?filters=${encodeURIComponent(JSON.stringify(filters))}`;
+  return `${url.origin}/contacts/${hubId}/objects/${type}/views/all/list`;
 }

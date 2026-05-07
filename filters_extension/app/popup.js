@@ -29,28 +29,75 @@ function handleResponse(response) {
     return;
   }
 
-  if (!response.filters || response.filters.length === 0) {
+  const { groups = [], baseUrl, source } = response;
+
+  if (groups.length === 0) {
     showState('no-filters');
     return;
   }
 
-  document.getElementById('filter-count').textContent = response.filters.length;
+  if (groups.length === 1) {
+    renderSingleGroup(groups[0], baseUrl, source);
+    showState('has-filters');
+    return;
+  }
+
+  renderMultiGroup(groups, baseUrl);
+  showState('multi-group');
+}
+
+function renderSingleGroup(filters, baseUrl, source) {
+  document.getElementById('filter-count').textContent = filters.length;
 
   const list = document.getElementById('filter-list');
   list.innerHTML = '';
-  response.filters.forEach(filter => {
+  filters.forEach(filter => {
     const li = document.createElement('li');
     li.textContent = formatFilter(filter);
     list.appendChild(li);
   });
 
-  if (response.source === 'js_state') {
+  if (source === 'js_state') {
     document.getElementById('fallback-notice').classList.remove('hidden');
   }
 
-  document.getElementById('copy-btn').addEventListener('click', () => copyUrl(response.fullUrl));
+  document.getElementById('copy-btn').addEventListener('click', () => copyUrl(buildUrl(baseUrl, filters)));
+}
 
-  showState('has-filters');
+function renderMultiGroup(groups, baseUrl) {
+  const container = document.getElementById('group-list');
+  container.innerHTML = '';
+
+  groups.forEach((filters, i) => {
+    const card = document.createElement('div');
+    card.className = 'filter-group';
+
+    const header = document.createElement('div');
+    header.className = 'group-header';
+    header.textContent = `Group ${i + 1} — ${filters.length} filter${filters.length !== 1 ? 's' : ''}`;
+
+    const ul = document.createElement('ul');
+    ul.className = 'group-filter-list';
+    filters.forEach(filter => {
+      const li = document.createElement('li');
+      li.textContent = formatFilter(filter);
+      ul.appendChild(li);
+    });
+
+    const btn = document.createElement('button');
+    btn.className = 'group-copy-btn';
+    btn.textContent = `Copy Group ${i + 1}`;
+    btn.addEventListener('click', () => copyUrl(buildUrl(baseUrl, filters)));
+
+    card.appendChild(header);
+    card.appendChild(ul);
+    card.appendChild(btn);
+    container.appendChild(card);
+  });
+}
+
+function buildUrl(baseUrl, filters) {
+  return `${baseUrl}?filters=${encodeURIComponent(JSON.stringify(filters))}`;
 }
 
 function formatFilter(filter) {
@@ -98,7 +145,7 @@ async function copyUrl(url) {
 }
 
 function showState(name) {
-  ['loading', 'wrong-page', 'no-filters', 'has-filters', 'error'].forEach(s => {
+  ['loading', 'wrong-page', 'no-filters', 'has-filters', 'multi-group', 'error'].forEach(s => {
     document.getElementById(`state-${s}`).classList.add('hidden');
   });
   document.getElementById(`state-${name}`).classList.remove('hidden');
