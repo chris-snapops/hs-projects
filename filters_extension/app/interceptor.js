@@ -9,7 +9,7 @@
 
   function tryExtract(url, body) {
     if (!url.includes('graphql/crm')) return;
-    console.log(`checking url: ${url}\n${body}`);
+    // console.log(`checking url: ${url}\n${body}`);
     try {
       const parsed = JSON.parse(body);
       const vars = parsed.variables;
