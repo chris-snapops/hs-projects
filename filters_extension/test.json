@@ -1,0 +1,37 @@
+[
+  {
+    "operationName": "CrmIndexSearchQuery",
+    "variables": {
+      "count": 0,
+      "filterGroups": [
+        {
+          "filters": [
+            {
+              "operator": "GT",
+              "property": "createdate",
+              "value": "2026-04-26",
+              "dateTimeFormat": "DATE"
+            }
+          ]
+        }
+      ],
+      "objectTypeId": "0-1",
+      "offset": 0,
+      "properties": [
+        "hs_object_id"
+      ],
+      "query": "",
+      "sorts": [
+        {
+          "property": "createdate",
+          "order": "ASC"
+        },
+        {
+          "property": "hs_object_id",
+          "order": "DESC"
+        }
+      ]
+    },
+    "query": "query CrmIndexSearchQuery($filterGroups: [FilterGroup!]!, $sorts: [Sort!], $query: String, $objectTypeId: String!, $properties: [String!]!, $count: Int, $offset: Int) {\n  crmObjectsSearch(\n    filterGroups: $filterGroups\n    sorts: $sorts\n    query: $query\n    type: $objectTypeId\n    count: $count\n    offset: $offset\n  ) {\n    total\n    offset\n    results {\n      ...CrmIndexObjectFragment\n      __typename\n    }\n    validationErrors {\n      __typename\n      ... on GenericValidationError {\n        message\n        __typename\n      }\n    }\n    __typename\n  }\n}\n\nfragment CrmIndexObjectFragment on CrmObject {\n  id\n  objectId: id\n  properties(names: $properties) {\n    id\n    name\n    value\n    __typename\n  }\n  userPermissions {\n    currentUserCanEdit\n    currentUserCanDelete\n    __typename\n  }\n  __typename\n}"
+  }
+]
